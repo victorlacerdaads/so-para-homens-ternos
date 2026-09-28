@@ -183,6 +183,13 @@
     var gal = d.querySelector('[data-gallery]'), track_ = gal.querySelector('[data-track-el]');
     var slides = [].slice.call(track_.children), n = slides.length, cur = 0, swiped = false;
     totalFotos = n; refreshWA();
+    function hydrate(i) {
+      var s = slides[i]; if (!s) return;
+      s.querySelectorAll('[data-srcset]').forEach(function (el) { el.srcset = el.dataset.srcset; el.removeAttribute('data-srcset'); });
+      s.querySelectorAll('img[data-src]').forEach(function (el) { el.src = el.dataset.src; el.removeAttribute('data-src'); });
+    }
+    function hydrateAround(i) { hydrate(i); hydrate(i + 1); hydrate(i - 1); }
+    hydrateAround(0);
     var curEl = gal.querySelector('[data-cur]'), dots = [].slice.call(gal.querySelectorAll('.gal-dots i'));
     var thumbs = [].slice.call(gal.querySelectorAll('[data-go]')), prev = gal.querySelector('[data-prev]'), next = gal.querySelector('[data-next]');
     function paint(i) {
@@ -192,6 +199,7 @@
       thumbs.forEach(function (t, k) { t.setAttribute('aria-current', k === i ? 'true' : 'false'); });
       if (prev) { prev.disabled = i === 0; next.disabled = i === n - 1; }
       fotoAtual = i + 1; refreshWA();   // os botões de WhatsApp passam a citar a foto que está na tela
+      hydrateAround(i);
       if (!swiped) { swiped = true; track('gallery_swipe', { model: CFG.model.slug }); }
     }
     function go(i, smooth) { i = Math.max(0, Math.min(n - 1, i)); track_.scrollTo({ left: i * track_.clientWidth, behavior: smooth === false ? 'auto' : 'smooth' }); }
@@ -209,12 +217,11 @@
     // link direto para uma foto: /modelos/<slug>/#foto-3
     var hm = /^#foto-(\d+)$/.exec(location.hash);
     if (hm && +hm[1] >= 2 && +hm[1] <= n) {
-      var alvo = +hm[1] - 1, im = slides[alvo].querySelector('img'); if (im) im.loading = 'eager';
+      var alvo = +hm[1] - 1; hydrateAround(alvo);
       var abrir = function () { track_.scrollLeft = slides[alvo].offsetLeft; paint(alvo); };
       abrir(); setTimeout(abrir, 60); window.addEventListener('load', abrir, { once: true });
     }
     // pré-carrega a próxima foto quando o usuário começa a interagir
-    if (slides[1]) { var warm = function () { var im = slides[1].querySelector('img'); if (im) im.loading = 'eager'; }; track_.addEventListener('pointerdown', warm, { once: true }); setTimeout(warm, 2500); }
 
     // lightbox (tela cheia)
     var lb = d.querySelector('[data-lightbox]'), lbt = lb && lb.querySelector('[data-lb-track]');

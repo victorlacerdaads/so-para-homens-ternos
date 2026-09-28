@@ -254,7 +254,9 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
 /* card de modelo */
 .card a{ display:block; text-decoration:none; -webkit-tap-highlight-color:transparent; }
 .card-img{ position:relative; aspect-ratio:3/4; border-radius:var(--r); overflow:hidden; background:var(--sw, #ddd); }
+.card-img picture, .slide picture{ height:100%; }
 .card-img img{ width:100%; height:100%; object-fit:cover; object-position:50% 42%; transition:transform .5s var(--ease); }
+.card-img img.fit-whole, .slide img.fit-whole{ object-position:50% 50%; }   /* fotos largas: enquadradas pelo centro */
 .card a:hover .card-img img{ transform:scale(1.03); }
 .card-cap{ display:grid; gap:3px; padding-top:10px; }
 .card-cap b{ font:500 18px/1.2 var(--f-display); letter-spacing:-.01em; }
