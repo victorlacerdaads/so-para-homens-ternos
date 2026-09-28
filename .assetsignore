@@ -1,0 +1,6 @@
+# Arquivos que o Wrangler NÃO deve enviar como assets do site (mesma sintaxe do .gitignore)
+.git
+.assetsignore
+.wrangler
+node_modules
+.DS_Store
